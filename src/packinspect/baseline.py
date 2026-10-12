@@ -1,0 +1,1 @@
+"""Classical computer-vision baseline: colour thresholding and connected components."""

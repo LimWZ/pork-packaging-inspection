@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Dataset: download separately (see data/README.md)
+data/*
+!data/README.md
+
+# Model weights and training outputs
+*.pt
+runs/
