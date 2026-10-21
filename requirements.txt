@@ -6,3 +6,4 @@ ultralytics
 pytest
 pytest-html
 pdoc
+pyyaml

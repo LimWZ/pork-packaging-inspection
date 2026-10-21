@@ -225,4 +225,4 @@ data/*
 
 # Model weights and training outputs
 *.pt
-runs/
+runs/.DS_Store
