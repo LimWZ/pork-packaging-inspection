@@ -1,9 +1,10 @@
 """Tests for packinspect.data."""
 
 import pytest
+import yaml
 
 from packinspect.data import (count_images, find_split_leakage, original_stem,
-                              read_yolo_labels, summarise_split)
+                              read_yolo_labels, summarise_split, write_data_yaml)
 
 
 def test_count_images_counts_only_images(tmp_path):
@@ -86,3 +87,14 @@ def test_find_split_leakage_detects_shared_original(tmp_path):
         d.mkdir(parents=True, exist_ok=True)
         (d / name).touch()
     assert find_split_leakage(tmp_path) == {"a_jpg": ["train", "valid"]}
+
+def test_write_data_yaml_uses_absolute_root(tmp_path):
+    (tmp_path / "data.yaml").write_text(
+        "train: ../train/images\nval: ../valid/images\ntest: ../test/images\n"
+        "nc: 2\nnames: ['a', 'b']\n"
+    )
+    out = write_data_yaml(tmp_path)
+    config = yaml.safe_load(out.read_text())
+    assert config["path"] == str(tmp_path.resolve())
+    assert config["train"] == "train/images"
+    assert config["names"] == ["a", "b"]

@@ -243,3 +243,40 @@ def find_split_leakage(data_dir, splits=SPLITS):
             if image_path.suffix.lower() in IMAGE_EXTENSIONS:
                 found.setdefault(original_stem(image_path.name), set()).add(split)
     return {stem: sorted(s) for stem, s in found.items() if len(s) > 1}
+
+def write_data_yaml(data_dir, out_name="data_local.yaml"):
+    """Write a copy of ``data.yaml`` that uses absolute paths.
+
+    Roboflow's ``data.yaml`` lists splits as ``../train/images``, which only
+    resolves from one particular working directory. The copy sets ``path``
+    to the dataset root and makes each split relative to it.
+
+    Parameters
+    ----------
+    data_dir : str or pathlib.Path
+        Dataset root containing ``data.yaml`` and the split folders.
+    out_name : str, optional
+        File name for the new YAML, written inside ``data_dir``.
+
+    Returns
+    -------
+    pathlib.Path
+        Absolute path of the new YAML file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If ``data_dir/data.yaml`` does not exist.
+    """
+    data_dir = Path(data_dir).resolve()
+    source = data_dir / "data.yaml"
+    if not source.is_file():
+        raise FileNotFoundError(f"No such file: {source}")
+    with open(source) as f:
+        config = yaml.safe_load(f)
+    config.update(path=str(data_dir), train="train/images",
+                  val="valid/images", test="test/images")
+    out_path = data_dir / out_name
+    with open(out_path, "w") as f:
+        yaml.safe_dump(config, f)
+    return out_path
