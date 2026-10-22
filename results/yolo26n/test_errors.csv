@@ -1,0 +1,10 @@
+image,error,gt_classes,max_conf
+frame_with_red_2248_jpg.rf.7c29cf90087a6d4ca2ad1307d8f513f5.jpg,false reject,,0.2778167724609375
+frame_with_red_4088_jpg.rf.b5f45a560eeca8215eaa6d0d8560f23d.jpg,false reject,,0.2780762314796448
+frame_with_red_7471_jpg.rf.d9733c9a3c8e75ec75d4c6c9f744a199.jpg,false reject,,0.8774241209030151
+frame_with_red_121_jpg.rf.ad75eafa25397a05aab1e53d4ef575a4.jpg,missed defect,packaging-error,0.0047798473387956
+frame_with_red_2317_jpg.rf.4abeaf71220b626a1722542689671962.jpg,missed defect,unsealed,0.0575665645301342
+frame_with_red_3381_jpg.rf.4c8e152ca96d5379f50edec0a07be4ff.jpg,missed defect,twisted-meat,0.050164945423603
+frame_with_red_437_jpg.rf.1d88cff92b7d5f81c694265df9667631.jpg,missed defect,twisted-meat,0.0301724169403314
+frame_with_red_7506_jpg.rf.c7c42fbdaa7e02d1a127e7257a932047.jpg,missed defect,unsealed,0.0489882156252861
+frame_with_red_908_jpg.rf.049ec4bdc03dbb17fb37a5b08cb582fd.jpg,missed defect,twisted-meat,0.1895821839570999

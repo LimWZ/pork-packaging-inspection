@@ -2,7 +2,7 @@ task: detect
 mode: train
 model: yolo26n.pt
 data: /Users/june/Monash/MMA3001/pork-packaging-inspection/data/data_local.yaml
-epochs: 1
+epochs: 50
 time: null
 patience: 15
 batch: 16
