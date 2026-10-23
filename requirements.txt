@@ -7,3 +7,4 @@ pytest
 pytest-html
 pdoc
 pyyaml
+scikit-learn

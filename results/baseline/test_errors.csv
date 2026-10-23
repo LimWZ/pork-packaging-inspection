@@ -1,0 +1,12 @@
+image,error,gt_classes,max_conf
+frame_with_red_2248_jpg.rf.7c29cf90087a6d4ca2ad1307d8f513f5.jpg,false reject,,0.3191411898154375
+frame_with_red_258_jpg.rf.1c18d8fd20e681b1fcaba54e790497ba.jpg,false reject,,0.3954624922329328
+frame_with_red_3303_jpg.rf.e910cc45370cc6f42f828d98731af54f.jpg,false reject,,0.3201625766795927
+frame_with_red_3436_jpg.rf.e78209989a2d95373bfecbac626586e6.jpg,false reject,,0.4156319720241032
+frame_with_red_378_jpg.rf.2dd94f946948c9b3fd658453b1f66659.jpg,false reject,,0.3049196076531103
+frame_with_red_4088_jpg.rf.b5f45a560eeca8215eaa6d0d8560f23d.jpg,false reject,,0.3160305011957313
+frame_with_red_4170_jpg.rf.d8c8752306e12c3db16b1e549e58179b.jpg,false reject,,0.2631983229438808
+frame_with_red_595_jpg.rf.8d890b5eeca398f20dfb87f1f0caaeb7.jpg,false reject,,0.5881893452430091
+frame_with_red_7325_jpg.rf.c5be3d172377edf96f4a7c7c2eaab561.jpg,false reject,,0.7444971062773724
+frame_with_red_7471_jpg.rf.d9733c9a3c8e75ec75d4c6c9f744a199.jpg,false reject,,0.9161180934995676
+frame_with_red_3371_jpg.rf.55a1977413f15016b60c76339853127c.jpg,missed defect,twisted-meat,0.1943520414280411
