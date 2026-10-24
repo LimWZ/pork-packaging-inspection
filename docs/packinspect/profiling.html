@@ -28,6 +28,16 @@
 
 
 
+            <h2>API Documentation</h2>
+                <ul class="memberlist">
+            <li>
+                    <a class="function" href="#time_per_item">time_per_item</a>
+            </li>
+            <li>
+                    <a class="function" href="#summarise_times">summarise_times</a>
+            </li>
+    </ul>
+
 
 
         <a class="attribution" title="pdoc: Python API documentation generator" href="https://pdoc.dev" target="_blank">
@@ -42,16 +52,230 @@
                     <h1 class="modulename">
 <a href="./../packinspect.html">packinspect</a><wbr>.profiling    </h1>
 
-                
+                        <div class="docstring"><p>Timing helpers for the performance analysis.</p>
+</div>
+
                         <input id="mod-profiling-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 
                         <label class="view-source-button" for="mod-profiling-view-source"><span>View Source</span></label>
 
-                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos">1</span></a>
+                        <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="sd">"""Timing helpers for the performance analysis."""</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="k">def</span><span class="w"> </span><span class="nf">time_per_item</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">warmup</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a><span class="w">    </span><span class="sd">"""Time one call of ``fn`` on each item.</span>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="sd">    The first ``warmup`` items are run once without timing first. Early calls</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a><span class="sd">    are slower because memory is being allocated, caches are cold and, on a</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="sd">    GPU, kernels are compiled, and including them would bias the results.</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="sd">    Parameters</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a><span class="sd">    ----------</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="sd">    fn : callable</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a><span class="sd">        Function taking one item. It must finish all its work before</span>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="sd">        returning; for GPU code, copy the result back to the CPU inside ``fn``.</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a><span class="sd">    items : sequence</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a><span class="sd">        Inputs to time, e.g. images already loaded into memory.</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a><span class="sd">    warmup : int, optional</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a><span class="sd">        Number of untimed calls before timing starts.</span>
+</span><span id="L-24"><a href="#L-24"><span class="linenos">24</span></a>
+</span><span id="L-25"><a href="#L-25"><span class="linenos">25</span></a><span class="sd">    Returns</span>
+</span><span id="L-26"><a href="#L-26"><span class="linenos">26</span></a><span class="sd">    -------</span>
+</span><span id="L-27"><a href="#L-27"><span class="linenos">27</span></a><span class="sd">    numpy.ndarray</span>
+</span><span id="L-28"><a href="#L-28"><span class="linenos">28</span></a><span class="sd">        Milliseconds per call, one value per item.</span>
+</span><span id="L-29"><a href="#L-29"><span class="linenos">29</span></a>
+</span><span id="L-30"><a href="#L-30"><span class="linenos">30</span></a><span class="sd">    Raises</span>
+</span><span id="L-31"><a href="#L-31"><span class="linenos">31</span></a><span class="sd">    ------</span>
+</span><span id="L-32"><a href="#L-32"><span class="linenos">32</span></a><span class="sd">    ValueError</span>
+</span><span id="L-33"><a href="#L-33"><span class="linenos">33</span></a><span class="sd">        If ``items`` is empty.</span>
+</span><span id="L-34"><a href="#L-34"><span class="linenos">34</span></a><span class="sd">    """</span>
+</span><span id="L-35"><a href="#L-35"><span class="linenos">35</span></a>    <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</span><span id="L-36"><a href="#L-36"><span class="linenos">36</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+</span><span id="L-37"><a href="#L-37"><span class="linenos">37</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"no items to time"</span><span class="p">)</span>
+</span><span id="L-38"><a href="#L-38"><span class="linenos">38</span></a>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">[:</span><span class="n">warmup</span><span class="p">]:</span>
+</span><span id="L-39"><a href="#L-39"><span class="linenos">39</span></a>        <span class="n">fn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span id="L-40"><a href="#L-40"><span class="linenos">40</span></a>    <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+</span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a>        <span class="n">fn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a><span class="k">def</span><span class="w"> </span><span class="nf">summarise_times</span><span class="p">(</span><span class="n">times_ms</span><span class="p">):</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a><span class="w">    </span><span class="sd">"""Summarise timings with statistics that resist occasional slow calls.</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a><span class="sd">    The median and interquartile range are reported rather than the mean and</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a><span class="sd">    standard deviation, because background processes cause occasional very</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a><span class="sd">    slow calls that would distort the mean.</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a><span class="sd">    Parameters</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a><span class="sd">    ----------</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a><span class="sd">    times_ms : array_like</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a><span class="sd">        Milliseconds per call.</span>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a><span class="sd">    Returns</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a><span class="sd">    -------</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a><span class="sd">    dict</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a><span class="sd">        ``median_ms``, ``q1_ms``, ``q3_ms`` (25th and 75th percentiles),</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a><span class="sd">        ``mean_ms`` and ``images_per_s`` (1000 / median).</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a><span class="sd">    """</span>
+</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">times_ms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>    <span class="n">q1</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">q3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">])</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"median_ms"</span><span class="p">:</span> <span class="n">median</span><span class="p">,</span> <span class="s2">"q1_ms"</span><span class="p">:</span> <span class="n">q1</span><span class="p">,</span> <span class="s2">"q3_ms"</span><span class="p">:</span> <span class="n">q3</span><span class="p">,</span>
+</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>            <span class="s2">"mean_ms"</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"images_per_s"</span><span class="p">:</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">median</span><span class="p">}</span>
 </span></pre></div>
 
 
             </section>
+                <section id="time_per_item">
+                            <input id="time_per_item-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">time_per_item</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">fn</span>, </span><span class="param"><span class="n">items</span>, </span><span class="param"><span class="n">warmup</span><span class="o">=</span><span class="mi">5</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="time_per_item-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#time_per_item"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="time_per_item-9"><a href="#time_per_item-9"><span class="linenos"> 9</span></a><span class="k">def</span><span class="w"> </span><span class="nf">time_per_item</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">items</span><span class="p">,</span> <span class="n">warmup</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+</span><span id="time_per_item-10"><a href="#time_per_item-10"><span class="linenos">10</span></a><span class="w">    </span><span class="sd">"""Time one call of ``fn`` on each item.</span>
+</span><span id="time_per_item-11"><a href="#time_per_item-11"><span class="linenos">11</span></a>
+</span><span id="time_per_item-12"><a href="#time_per_item-12"><span class="linenos">12</span></a><span class="sd">    The first ``warmup`` items are run once without timing first. Early calls</span>
+</span><span id="time_per_item-13"><a href="#time_per_item-13"><span class="linenos">13</span></a><span class="sd">    are slower because memory is being allocated, caches are cold and, on a</span>
+</span><span id="time_per_item-14"><a href="#time_per_item-14"><span class="linenos">14</span></a><span class="sd">    GPU, kernels are compiled, and including them would bias the results.</span>
+</span><span id="time_per_item-15"><a href="#time_per_item-15"><span class="linenos">15</span></a>
+</span><span id="time_per_item-16"><a href="#time_per_item-16"><span class="linenos">16</span></a><span class="sd">    Parameters</span>
+</span><span id="time_per_item-17"><a href="#time_per_item-17"><span class="linenos">17</span></a><span class="sd">    ----------</span>
+</span><span id="time_per_item-18"><a href="#time_per_item-18"><span class="linenos">18</span></a><span class="sd">    fn : callable</span>
+</span><span id="time_per_item-19"><a href="#time_per_item-19"><span class="linenos">19</span></a><span class="sd">        Function taking one item. It must finish all its work before</span>
+</span><span id="time_per_item-20"><a href="#time_per_item-20"><span class="linenos">20</span></a><span class="sd">        returning; for GPU code, copy the result back to the CPU inside ``fn``.</span>
+</span><span id="time_per_item-21"><a href="#time_per_item-21"><span class="linenos">21</span></a><span class="sd">    items : sequence</span>
+</span><span id="time_per_item-22"><a href="#time_per_item-22"><span class="linenos">22</span></a><span class="sd">        Inputs to time, e.g. images already loaded into memory.</span>
+</span><span id="time_per_item-23"><a href="#time_per_item-23"><span class="linenos">23</span></a><span class="sd">    warmup : int, optional</span>
+</span><span id="time_per_item-24"><a href="#time_per_item-24"><span class="linenos">24</span></a><span class="sd">        Number of untimed calls before timing starts.</span>
+</span><span id="time_per_item-25"><a href="#time_per_item-25"><span class="linenos">25</span></a>
+</span><span id="time_per_item-26"><a href="#time_per_item-26"><span class="linenos">26</span></a><span class="sd">    Returns</span>
+</span><span id="time_per_item-27"><a href="#time_per_item-27"><span class="linenos">27</span></a><span class="sd">    -------</span>
+</span><span id="time_per_item-28"><a href="#time_per_item-28"><span class="linenos">28</span></a><span class="sd">    numpy.ndarray</span>
+</span><span id="time_per_item-29"><a href="#time_per_item-29"><span class="linenos">29</span></a><span class="sd">        Milliseconds per call, one value per item.</span>
+</span><span id="time_per_item-30"><a href="#time_per_item-30"><span class="linenos">30</span></a>
+</span><span id="time_per_item-31"><a href="#time_per_item-31"><span class="linenos">31</span></a><span class="sd">    Raises</span>
+</span><span id="time_per_item-32"><a href="#time_per_item-32"><span class="linenos">32</span></a><span class="sd">    ------</span>
+</span><span id="time_per_item-33"><a href="#time_per_item-33"><span class="linenos">33</span></a><span class="sd">    ValueError</span>
+</span><span id="time_per_item-34"><a href="#time_per_item-34"><span class="linenos">34</span></a><span class="sd">        If ``items`` is empty.</span>
+</span><span id="time_per_item-35"><a href="#time_per_item-35"><span class="linenos">35</span></a><span class="sd">    """</span>
+</span><span id="time_per_item-36"><a href="#time_per_item-36"><span class="linenos">36</span></a>    <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+</span><span id="time_per_item-37"><a href="#time_per_item-37"><span class="linenos">37</span></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+</span><span id="time_per_item-38"><a href="#time_per_item-38"><span class="linenos">38</span></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"no items to time"</span><span class="p">)</span>
+</span><span id="time_per_item-39"><a href="#time_per_item-39"><span class="linenos">39</span></a>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">[:</span><span class="n">warmup</span><span class="p">]:</span>
+</span><span id="time_per_item-40"><a href="#time_per_item-40"><span class="linenos">40</span></a>        <span class="n">fn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span id="time_per_item-41"><a href="#time_per_item-41"><span class="linenos">41</span></a>    <span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="time_per_item-42"><a href="#time_per_item-42"><span class="linenos">42</span></a>    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+</span><span id="time_per_item-43"><a href="#time_per_item-43"><span class="linenos">43</span></a>        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span><span id="time_per_item-44"><a href="#time_per_item-44"><span class="linenos">44</span></a>        <span class="n">fn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span><span id="time_per_item-45"><a href="#time_per_item-45"><span class="linenos">45</span></a>        <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span><span id="time_per_item-46"><a href="#time_per_item-46"><span class="linenos">46</span></a>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Time one call of <code>fn</code> on each item.</p>
+
+<p>The first <code>warmup</code> items are run once without timing first. Early calls
+are slower because memory is being allocated, caches are cold and, on a
+GPU, kernels are compiled, and including them would bias the results.</p>
+
+<h6 id="parameters">Parameters</h6>
+
+<ul>
+<li><strong>fn</strong> (callable):
+Function taking one item. It must finish all its work before
+returning; for GPU code, copy the result back to the CPU inside <code>fn</code>.</li>
+<li><strong>items</strong> (sequence):
+Inputs to time, e.g. images already loaded into memory.</li>
+<li><strong>warmup</strong> (int, optional):
+Number of untimed calls before timing starts.</li>
+</ul>
+
+<h6 id="returns">Returns</h6>
+
+<ul>
+<li><strong>numpy.ndarray</strong>: Milliseconds per call, one value per item.</li>
+</ul>
+
+<h6 id="raises">Raises</h6>
+
+<ul>
+<li><strong>ValueError</strong>: If <code>items</code> is empty.</li>
+</ul>
+</div>
+
+
+                </section>
+                <section id="summarise_times">
+                            <input id="summarise_times-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">summarise_times</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">times_ms</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="summarise_times-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#summarise_times"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="summarise_times-49"><a href="#summarise_times-49"><span class="linenos">49</span></a><span class="k">def</span><span class="w"> </span><span class="nf">summarise_times</span><span class="p">(</span><span class="n">times_ms</span><span class="p">):</span>
+</span><span id="summarise_times-50"><a href="#summarise_times-50"><span class="linenos">50</span></a><span class="w">    </span><span class="sd">"""Summarise timings with statistics that resist occasional slow calls.</span>
+</span><span id="summarise_times-51"><a href="#summarise_times-51"><span class="linenos">51</span></a>
+</span><span id="summarise_times-52"><a href="#summarise_times-52"><span class="linenos">52</span></a><span class="sd">    The median and interquartile range are reported rather than the mean and</span>
+</span><span id="summarise_times-53"><a href="#summarise_times-53"><span class="linenos">53</span></a><span class="sd">    standard deviation, because background processes cause occasional very</span>
+</span><span id="summarise_times-54"><a href="#summarise_times-54"><span class="linenos">54</span></a><span class="sd">    slow calls that would distort the mean.</span>
+</span><span id="summarise_times-55"><a href="#summarise_times-55"><span class="linenos">55</span></a>
+</span><span id="summarise_times-56"><a href="#summarise_times-56"><span class="linenos">56</span></a><span class="sd">    Parameters</span>
+</span><span id="summarise_times-57"><a href="#summarise_times-57"><span class="linenos">57</span></a><span class="sd">    ----------</span>
+</span><span id="summarise_times-58"><a href="#summarise_times-58"><span class="linenos">58</span></a><span class="sd">    times_ms : array_like</span>
+</span><span id="summarise_times-59"><a href="#summarise_times-59"><span class="linenos">59</span></a><span class="sd">        Milliseconds per call.</span>
+</span><span id="summarise_times-60"><a href="#summarise_times-60"><span class="linenos">60</span></a>
+</span><span id="summarise_times-61"><a href="#summarise_times-61"><span class="linenos">61</span></a><span class="sd">    Returns</span>
+</span><span id="summarise_times-62"><a href="#summarise_times-62"><span class="linenos">62</span></a><span class="sd">    -------</span>
+</span><span id="summarise_times-63"><a href="#summarise_times-63"><span class="linenos">63</span></a><span class="sd">    dict</span>
+</span><span id="summarise_times-64"><a href="#summarise_times-64"><span class="linenos">64</span></a><span class="sd">        ``median_ms``, ``q1_ms``, ``q3_ms`` (25th and 75th percentiles),</span>
+</span><span id="summarise_times-65"><a href="#summarise_times-65"><span class="linenos">65</span></a><span class="sd">        ``mean_ms`` and ``images_per_s`` (1000 / median).</span>
+</span><span id="summarise_times-66"><a href="#summarise_times-66"><span class="linenos">66</span></a><span class="sd">    """</span>
+</span><span id="summarise_times-67"><a href="#summarise_times-67"><span class="linenos">67</span></a>    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">times_ms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+</span><span id="summarise_times-68"><a href="#summarise_times-68"><span class="linenos">68</span></a>    <span class="n">q1</span><span class="p">,</span> <span class="n">median</span><span class="p">,</span> <span class="n">q3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">75</span><span class="p">])</span>
+</span><span id="summarise_times-69"><a href="#summarise_times-69"><span class="linenos">69</span></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"median_ms"</span><span class="p">:</span> <span class="n">median</span><span class="p">,</span> <span class="s2">"q1_ms"</span><span class="p">:</span> <span class="n">q1</span><span class="p">,</span> <span class="s2">"q3_ms"</span><span class="p">:</span> <span class="n">q3</span><span class="p">,</span>
+</span><span id="summarise_times-70"><a href="#summarise_times-70"><span class="linenos">70</span></a>            <span class="s2">"mean_ms"</span><span class="p">:</span> <span class="n">t</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="s2">"images_per_s"</span><span class="p">:</span> <span class="mi">1000</span> <span class="o">/</span> <span class="n">median</span><span class="p">}</span>
+</span></pre></div>
+
+
+            <div class="docstring"><p>Summarise timings with statistics that resist occasional slow calls.</p>
+
+<p>The median and interquartile range are reported rather than the mean and
+standard deviation, because background processes cause occasional very
+slow calls that would distort the mean.</p>
+
+<h6 id="parameters">Parameters</h6>
+
+<ul>
+<li><strong>times_ms</strong> (array_like):
+Milliseconds per call.</li>
+</ul>
+
+<h6 id="returns">Returns</h6>
+
+<ul>
+<li><strong>dict</strong>: <code>median_ms</code>, <code>q1_ms</code>, <code>q3_ms</code> (25th and 75th percentiles),
+<code>mean_ms</code> and <code>images_per_s</code> (1000 / median).</li>
+</ul>
+</div>
+
+
+                </section>
     </main>
 <script>
     function escapeHTML(html) {
