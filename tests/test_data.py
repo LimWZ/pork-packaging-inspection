@@ -1,5 +1,3 @@
-"""Tests for packinspect.data."""
-
 import pytest
 import yaml
 

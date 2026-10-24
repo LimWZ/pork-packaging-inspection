@@ -1,5 +1,3 @@
-"""Tests for packinspect.profiling."""
-
 import pytest
 
 from packinspect.profiling import summarise_times, time_per_item

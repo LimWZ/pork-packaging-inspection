@@ -1,21 +1,3 @@
-"""Loading and checking the pork rasher packaging dataset.
-
-The dataset is a Roboflow export in YOLO format::
-
-    data/
-        data.yaml
-        train/images/*.jpg    train/labels/*.txt
-        valid/images/*.jpg    valid/labels/*.txt
-        test/images/*.jpg     test/labels/*.txt
-
-Each label file has one line per bounding box::
-
-    class_id x_centre y_centre width height
-
-with the four coordinates normalised to [0, 1] by the image size.
-An empty label file means the image has no labelled defects.
-"""
-
 import re
 from collections import Counter
 from pathlib import Path
@@ -33,24 +15,6 @@ _COORD_TOL = 1e-6
 
 
 def count_images(folder):
-    """Count the image files in a folder.
-
-    Parameters
-    ----------
-    folder : str or pathlib.Path
-        Directory containing image files.
-
-    Returns
-    -------
-    int
-        Number of files with a .jpg, .jpeg or .png extension
-        (case-insensitive).
-
-    Raises
-    ------
-    FileNotFoundError
-        If ``folder`` does not exist or is not a directory.
-    """
     folder = Path(folder)
     if not folder.is_dir():
         raise FileNotFoundError(f"No such folder: {folder}")
@@ -58,25 +22,6 @@ def count_images(folder):
 
 
 def load_class_names(yaml_path):
-    """Read the class names from a YOLO ``data.yaml`` file.
-
-    Parameters
-    ----------
-    yaml_path : str or pathlib.Path
-        Path to the dataset's ``data.yaml``.
-
-    Returns
-    -------
-    list of str
-        Class names, indexed by class id.
-
-    Raises
-    ------
-    FileNotFoundError
-        If ``yaml_path`` does not exist.
-    KeyError
-        If the file has no ``names`` entry.
-    """
     yaml_path = Path(yaml_path)
     if not yaml_path.is_file():
         raise FileNotFoundError(f"No such file: {yaml_path}")
@@ -92,28 +37,6 @@ def load_class_names(yaml_path):
 
 
 def read_yolo_labels(label_path, num_classes):
-    """Read and validate a YOLO-format label file.
-
-    Parameters
-    ----------
-    label_path : str or pathlib.Path
-        Path to a ``.txt`` label file.
-    num_classes : int
-        Number of classes; valid class ids are ``0`` to ``num_classes - 1``.
-
-    Returns
-    -------
-    list of tuple
-        One ``(class_id, x_centre, y_centre, width, height)`` tuple per box,
-        with ``class_id`` an int and the coordinates floats in [0, 1].
-        An empty list means the image has no labelled defects.
-
-    Raises
-    ------
-    ValueError
-        If a line does not have exactly five values, the class id is out
-        of range, or a coordinate is outside [0, 1].
-    """
     boxes = []
     lines = Path(label_path).read_text().splitlines()
     for line_no, line in enumerate(lines, start=1):
@@ -133,56 +56,10 @@ def read_yolo_labels(label_path, num_classes):
 
 
 def original_stem(image_name):
-    """Recover the original image name from a Roboflow export filename.
-
-    Roboflow renames each exported image as ``<original>_<ext>.rf.<hash>.jpg``.
-    Augmented copies of one original share the ``<original>_<ext>`` part but
-    have different hashes.
-
-    Parameters
-    ----------
-    image_name : str
-        Filename (not a full path) of an exported image or label file.
-
-    Returns
-    -------
-    str
-        The name before ``.rf.<hash>``, or the name without its extension
-        if there is no Roboflow suffix.
-
-    Examples
-    --------
-    >>> original_stem("tray_012_jpg.rf.3f9a1c.jpg")
-    'tray_012_jpg'
-    """
     return _ROBOFLOW_SUFFIX.sub("", Path(image_name).stem)
 
 
 def summarise_split(split_dir, class_names):
-    """Count images, labels and boxes in one dataset split.
-
-    Parameters
-    ----------
-    split_dir : str or pathlib.Path
-        Split folder containing ``images/`` and ``labels/`` subfolders.
-    class_names : list of str
-        Class names, indexed by class id.
-
-    Returns
-    -------
-    dict
-        ``images``: number of image files;
-        ``originals``: number of distinct original images (before augmentation);
-        ``missing_labels``: images with no matching label file;
-        ``no_defect_images``: images whose label file is empty;
-        ``boxes``: Counter of boxes per class name;
-        ``images_with``: Counter of images containing each class name.
-
-    Raises
-    ------
-    FileNotFoundError
-        If ``images/`` or ``labels/`` is missing.
-    """
     split_dir = Path(split_dir)
     image_dir, label_dir = split_dir / "images", split_dir / "labels"
     for d in (image_dir, label_dir):
@@ -216,27 +93,6 @@ def summarise_split(split_dir, class_names):
 
 
 def find_split_leakage(data_dir, splits=SPLITS):
-    """Find original images whose copies appear in more than one split.
-
-    Different photos can share a filename in this dataset, so results
-    are candidates for manual inspection, not confirmed leaks.
-
-    Only catches copies that share a Roboflow original name; near-duplicate
-    photos saved under different names are not detected.
-
-    Parameters
-    ----------
-    data_dir : str or pathlib.Path
-        Dataset root containing one folder per split.
-    splits : sequence of str, optional
-        Split folder names to compare.
-
-    Returns
-    -------
-    dict
-        Maps each leaked original name to the sorted list of splits it
-        appears in. An empty dict means no leakage was found.
-    """
     found = {}
     for split in splits:
         for image_path in (Path(data_dir) / split / "images").iterdir():
@@ -245,29 +101,6 @@ def find_split_leakage(data_dir, splits=SPLITS):
     return {stem: sorted(s) for stem, s in found.items() if len(s) > 1}
 
 def write_data_yaml(data_dir, out_name="data_local.yaml"):
-    """Write a copy of ``data.yaml`` that uses absolute paths.
-
-    Roboflow's ``data.yaml`` lists splits as ``../train/images``, which only
-    resolves from one particular working directory. The copy sets ``path``
-    to the dataset root and makes each split relative to it.
-
-    Parameters
-    ----------
-    data_dir : str or pathlib.Path
-        Dataset root containing ``data.yaml`` and the split folders.
-    out_name : str, optional
-        File name for the new YAML, written inside ``data_dir``.
-
-    Returns
-    -------
-    pathlib.Path
-        Absolute path of the new YAML file.
-
-    Raises
-    ------
-    FileNotFoundError
-        If ``data_dir/data.yaml`` does not exist.
-    """
     data_dir = Path(data_dir).resolve()
     source = data_dir / "data.yaml"
     if not source.is_file():

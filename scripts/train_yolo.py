@@ -1,15 +1,3 @@
-"""Train a COCO-pretrained YOLO detector on the pork rasher dataset.
-
-Run from the repository root::
-
-    python scripts/train_yolo.py --epochs 1     # quick timing test
-    python scripts/train_yolo.py                # full run
-
-Training outputs (curves, plots, weights) are written to
-``runs/<model>/train/``, which Git ignores. The per-epoch training
-curves are copied to ``results/<model>/training_curves.csv``.
-"""
-
 import argparse
 import shutil
 import time
@@ -22,7 +10,6 @@ from packinspect.detector import default_device
 
 
 def main():
-    """Parse settings, train the model and save the training curves."""
     parser = argparse.ArgumentParser(description="Train a YOLO defect detector.")
     parser.add_argument("--model", default="yolo26n.pt", help="pretrained weights to start from")
     parser.add_argument("--epochs", type=int, default=50)

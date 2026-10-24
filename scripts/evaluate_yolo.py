@@ -1,18 +1,3 @@
-"""Evaluate trained YOLO weights on the validation and test sets.
-
-Run from the repository root after training::
-
-    python scripts/evaluate_yolo.py                  # evaluates runs/yolo26n
-    python scripts/evaluate_yolo.py --device cpu     # CPU timing
-
-Writes to ``results/<model>/``:
-
-- ``detection_metrics.csv``: precision, recall, mAP50 and mAP50-95 per class
-- ``speed.csv``: milliseconds per image for each processing stage
-- ``predictions_valid.csv`` and ``predictions_test.csv``: ground truth and
-  highest predicted confidence per image, for the pass/fail analysis
-"""
-
 import argparse
 from pathlib import Path
 
@@ -25,7 +10,6 @@ DATA_DIR = Path("data")
 
 
 def main():
-    """Run the evaluation and save the result tables."""
     parser = argparse.ArgumentParser(description="Evaluate a trained YOLO detector.")
     parser.add_argument("--model", default="yolo26n", help="run name under runs/")
     parser.add_argument("--imgsz", type=int, default=640)

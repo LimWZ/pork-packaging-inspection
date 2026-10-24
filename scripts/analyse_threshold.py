@@ -1,22 +1,3 @@
-"""Choose the pass/fail threshold on the validation set and report it on the test set.
-
-Run from the repository root after ``evaluate_yolo.py``::
-
-    python scripts/analyse_threshold.py
-    python scripts/analyse_threshold.py --min-catch-rate 0.9   # sensitivity check
-
-Reads ``results/<model>/predictions_{valid,test}.csv`` and writes to
-``results/<model>/``:
-
-- ``tray_level_results.csv``: catch rate, pass rate and accuracy with 95%
-  Wilson intervals, for the chosen threshold, YOLO's default threshold of 0.25,
-  and the trivial "fail every tray" and "pass every tray" rules
-- ``threshold_sweep.csv``: catch and pass rate at thresholds 0.00 to 1.00
-- ``test_errors.csv``: test trays the chosen threshold gets wrong
-
-and the figure ``reports/figures/<model>_threshold.png``.
-"""
-
 import argparse
 from pathlib import Path
 
@@ -34,11 +15,6 @@ INK = "#52514e"            # axis and label text
 
 
 def plot_threshold(sweeps, chosen, chosen_points, out_path):
-    """Plot rates against threshold (left) and the ROC curve (right).
-
-    ``chosen_points`` maps each split to its ``(false reject rate, catch rate)``
-    at the chosen threshold, which is marked on the ROC curve.
-    """
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4.8))
     styles = {"valid": "--", "test": "-"}
 
@@ -79,7 +55,6 @@ def plot_threshold(sweeps, chosen, chosen_points, out_path):
 
 
 def main():
-    """Choose the threshold, evaluate it and save tables and the figure."""
     parser = argparse.ArgumentParser(description="Tray-level pass/fail analysis.")
     parser.add_argument("--model", default="yolo26n", help="results folder name")
     parser.add_argument("--min-catch-rate", type=float, default=0.95,

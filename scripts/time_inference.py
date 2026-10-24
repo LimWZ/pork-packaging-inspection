@@ -1,16 +1,3 @@
-"""Measure inference time and computational cost of YOLO and the baseline.
-
-Run from the repository root after training both methods::
-
-    python scripts/time_inference.py
-
-Test images are loaded into memory first, so disk reading is not timed.
-Each method is timed per image after a warm-up, on every available device,
-and YOLO is also timed at three input sizes to show the speed/size trade-off.
-
-Writes ``results/timing.csv`` and prints a summary table.
-"""
-
 import argparse
 from pathlib import Path
 
@@ -27,7 +14,6 @@ from packinspect.profiling import summarise_times, time_per_item
 
 
 def main():
-    """Time each method and save the results."""
     parser = argparse.ArgumentParser(description="Time inference for YOLO and the baseline.")
     parser.add_argument("--model", default="yolo26n", help="YOLO run name under runs/")
     parser.add_argument("--sizes", type=int, nargs="+", default=[320, 480, 640],

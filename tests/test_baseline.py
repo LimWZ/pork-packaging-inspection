@@ -1,5 +1,3 @@
-"""Tests for packinspect.baseline."""
-
 import cv2
 import numpy as np
 import pytest

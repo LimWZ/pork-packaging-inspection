@@ -1,9 +1,3 @@
-"""Device selection and evaluation for the YOLO defect detector.
-
-Wraps the Ultralytics API so the scripts in ``scripts/`` stay short and the
-evaluation outputs have a fixed, documented format.
-"""
-
 from pathlib import Path
 
 import pandas as pd
@@ -13,14 +7,6 @@ from packinspect.data import read_yolo_labels
 
 
 def default_device():
-    """Pick the fastest available PyTorch device.
-
-    Returns
-    -------
-    str
-        ``"0"`` (first CUDA GPU) if an NVIDIA GPU is available, ``"mps"`` on
-        Apple Silicon, otherwise ``"cpu"``.
-    """
     if torch.cuda.is_available():
         return "0"
     if torch.backends.mps.is_available():
@@ -29,33 +15,6 @@ def default_device():
 
 
 def detection_metrics(model, data_yaml, class_names, imgsz=640, device=None, out_dir=None):
-    """Compute per-class detection metrics on the validation and test splits.
-
-    Parameters
-    ----------
-    model : ultralytics.YOLO
-        Trained detector.
-    data_yaml : str or pathlib.Path
-        Dataset YAML with ``val`` and ``test`` entries.
-    class_names : list of str
-        Class names, indexed by class id.
-    imgsz : int, optional
-        Inference image size in pixels.
-    device : str, optional
-        PyTorch device; defaults to :func:`default_device`.
-    out_dir : str or pathlib.Path, optional
-        Where Ultralytics saves its plots (confusion matrix, PR curves).
-
-    Returns
-    -------
-    metrics : pandas.DataFrame
-        One row per (split, class) with precision, recall, mAP50 and mAP50-95,
-        plus an ``"all"`` row per split. Classes with no labels in a split
-        (e.g. wrinkle) are omitted for that split.
-    speed : pandas.DataFrame
-        Milliseconds per image for pre-processing, inference and
-        post-processing, one row per split.
-    """
     device = device or default_device()
     metric_rows, speed_rows = [], []
     for split in ("val", "test"):
@@ -73,32 +32,6 @@ def detection_metrics(model, data_yaml, class_names, imgsz=640, device=None, out
 
 
 def export_predictions(model, split_dir, class_names, imgsz=640, device=None):
-    """Record the ground truth and highest predicted confidence for each image.
-
-    A tray is classed as failing at threshold ``t`` if ``max_conf >= t``, so
-    this table is enough to test any threshold without rerunning the model.
-
-    Parameters
-    ----------
-    model : ultralytics.YOLO
-        Trained detector.
-    split_dir : str or pathlib.Path
-        Split folder containing ``images/`` and ``labels/``.
-    class_names : list of str
-        Class names, indexed by class id.
-    imgsz : int, optional
-        Inference image size in pixels.
-    device : str, optional
-        PyTorch device; defaults to :func:`default_device`.
-
-    Returns
-    -------
-    pandas.DataFrame
-        One row per image with columns ``image``, ``gt_defective`` (1 if the
-        image has any labelled defect), ``gt_classes`` (space-separated names),
-        ``max_conf`` (highest confidence of any predicted box, 0 if none) and
-        ``max_conf_<class>`` for each class.
-    """
     device = device or default_device()
     split_dir = Path(split_dir)
     rows = []

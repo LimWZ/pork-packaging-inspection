@@ -1,5 +1,3 @@
-"""Tests for packinspect.evaluate."""
-
 import numpy as np
 import pytest
 

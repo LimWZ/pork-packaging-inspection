@@ -1,21 +1,3 @@
-"""Train and evaluate the classical baseline (colour and edge features + logistic regression).
-
-Run from the repository root::
-
-    python scripts/run_baseline.py
-    python scripts/analyse_threshold.py --model baseline
-
-Writes to ``results/baseline/``:
-
-- ``predictions_valid.csv``, ``predictions_test.csv``: one row per tray, in the
-  same format as the YOLO predictions. The ``max_conf`` column holds the
-  baseline's defect probability, so ``analyse_threshold.py`` works unchanged
-  and both methods are judged by exactly the same code.
-- ``c_search.csv``: validation ROC AUC for each regularisation strength tried
-
-and saves the fitted model to ``runs/baseline/model.joblib`` for timing.
-"""
-
 import time
 from pathlib import Path
 
@@ -28,7 +10,6 @@ DATA_DIR = Path("data")
 
 
 def main():
-    """Extract features, fit the model and save predictions."""
     names = load_class_names(DATA_DIR / "data.yaml")
     data = {}
     for split in SPLITS:

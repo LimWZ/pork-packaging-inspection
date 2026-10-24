@@ -1,13 +1,3 @@
-"""Summarise the dataset: image and box counts per split and class,
-plus a check for original images shared between splits.
-
-Run from the repository root::
-
-    python scripts/explore_data.py
-
-Prints a summary and writes ``results/dataset_summary.csv``.
-"""
-
 from pathlib import Path
 
 import pandas as pd
@@ -19,7 +9,6 @@ RESULTS_DIR = Path("results")
 
 
 def main():
-    """Print the dataset summary and save it as a CSV."""
     class_names = load_class_names(DATA_DIR / "data.yaml")
     rows = []
 
