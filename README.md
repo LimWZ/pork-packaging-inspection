@@ -8,7 +8,7 @@ Automated pass/fail inspection of pork rasher packaging from camera images. A YO
 MMA3001 Pork Packaging Inspection, June Lim, 2026
 
 ## Setup
-Tested with Python 3.14 on macOS, Apple [chip].
+Tested with Python 3.14 on macOS, Apple M5 chip.
 
 ```bash
 git clone https://github.com/LimWZ/pork-packaging-inspection.git
