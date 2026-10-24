@@ -5,7 +5,10 @@ Automated pass/fail inspection of pork rasher packaging from camera images. A YO
 **Input:** 720 x 540 RGB tray image. 
 **Output:** defect boxes and a pass/fail decision per tray.
 
+MMA3001 Pork Packaging Inspection, June Lim, 2026
+
 ## Setup
+Tested with Python 3.14 on macOS, Apple [chip].
 
 ```bash
 git clone https://github.com/LimWZ/pork-packaging-inspection.git
